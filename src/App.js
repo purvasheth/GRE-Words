@@ -1,25 +1,48 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import { startFirebaseUI } from "./Authentication";
+import { auth } from "./firebase";
+import styled from "@emotion/styled";
+import "../node_modules/firebaseui/dist/firebaseui.css";
+import "./App.css";
+import { Redirect } from "react-router";
+
+const Div = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+`;
+const H = styled.h1`
+  position: fixed;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: "Permanent Marker", cursive;
+`;
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+  const [islogged, setLogged] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((authUser) => {
+      if (authUser === null) {
+        startFirebaseUI("#firebaseui-auth-container");
+      } else {
+        setLogged(true);
+      }
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  return islogged ? (
+    <Redirect to="/home" />
+  ) : (
+    <React.Fragment>
+      <H>GRE WORDS</H>
+      <Div id="firebaseui-auth-container"></Div>
+    </React.Fragment>
   );
 }
 
