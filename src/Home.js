@@ -6,10 +6,10 @@ import styled from "@emotion/styled";
 import { createUserDocument } from "./FirebaseFunctions";
 import Grid from "./Grid";
 
+//TODO: Add Navigation on top which is responsive and remove this button.
 const Button = styled.button`
   padding: 8px 25px;
   background: #0391ce;
-  opacity: 0.9;
   color: #fff;
   border-radius: 3px;
   border: transparent;
@@ -19,22 +19,7 @@ const Button = styled.button`
 `;
 
 function Home() {
-  const [user, setUser] = useContext(UserContext);
   const [islogged, setLogged] = useState(true);
-
-  useEffect(() => {
-    let unsubscribe = auth.onAuthStateChanged((authUser) => {
-      if (authUser) {
-        const { displayName, uid, email } = authUser;
-        setUser({ displayName, uid, email });
-        createUserDocument(authUser);
-      }
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
 
   return islogged ? (
     <React.Fragment>
@@ -42,7 +27,7 @@ function Home() {
         onClick={() => {
           auth.signOut();
           setLogged(false);
-          setUser({});
+          localStorage.removeItem("authUser");
         }}
       >
         Sign Out

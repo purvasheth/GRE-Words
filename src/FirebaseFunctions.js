@@ -53,7 +53,7 @@ export const fetchStore = async (userId, num, words) => {
     const batch = firestore.batch();
     words.forEach((word) => {
       const obj = {
-        global: "",
+        global: "new word",
         local: "new word",
         correct: 0,
         wrong: 0,

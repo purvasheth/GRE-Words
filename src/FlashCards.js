@@ -1,28 +1,29 @@
-import React, { useState, useContext, useEffect, useReducer } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import { writeStore } from "./FirebaseFunctions";
-import UserContext from "./UserContext";
 import { reducer } from "./Reducer";
 import {
   Button,
   ParentContainer,
   Container,
-  Card,
+  FlashCard,
   ProgressContainer,
   Progress,
   Bar,
   Span,
+  colors,
 } from "./Components";
 
-function FlashCard(props) {
-  let { newWords, initialState } = props.location.state;
+function FlashCards(props) {
+  const { newWords, initialState } = props.location.state;
+  const { green, yellow, darkred, darkgrey, darkblue } = colors;
+  const user = JSON.parse(localStorage.getItem("authUser"));
 
   const [flip, setFlip] = useState(false);
-  const [user] = useContext(UserContext);
   const [word, setWord] = useState("");
   const [wordId, setWordId] = useState("");
   const [info, setInfo] = useState([]);
   const [cat, setCat] = useState("");
-  const [color, setColor] = useState("#505050");
+  const [color, setColor] = useState(darkgrey);
   const [store, dispatch] = useReducer(reducer, initialState);
   const [counts, setCounts] = useState({});
 
@@ -32,28 +33,32 @@ function FlashCard(props) {
     return () => {
       writeStore(user.uid, store);
     };
+  }, []);
+
+  useEffect(() => {
+    randomChoice(newWords, store);
   }, [store]);
 
   function randomChoice(arr) {
     const w = arr[Math.floor(arr.length * Math.random())];
-    //const w = arr[0];
     setWordId(w.wordId);
     setWord(w.word);
     setInfo(w.info);
     let newWord = store.filter((word) => word.hasOwnProperty(w.wordId))[0];
-    setCat(newWord[w.wordId]["local"]);
-    switch (newWord[w.wordId]["local"]) {
+    const newCat = newWord[w.wordId]["local"];
+    setCat(newCat);
+    switch (newCat) {
       case "mastered":
-        setColor("green");
+        setColor(green);
         break;
       case "reviewing":
-        setColor("#F7AF06");
+        setColor(yellow);
         break;
       case "learning":
-        setColor("red");
+        setColor(darkred);
         break;
       default:
-        setColor("#505050");
+        setColor(darkgrey);
         break;
     }
     const newCounts = {
@@ -64,17 +69,17 @@ function FlashCard(props) {
     };
     store.forEach((word) => {
       const key = Object.keys(word)[0];
-
       newCounts[word[key]["local"]]++;
     });
     setCounts(newCounts);
   }
+  const { mastered, learning, reviewing } = counts;
 
   return (
     <ParentContainer>
       <Container flip={flip}>
-        <Card front>
-          <p style={{ color: "#072F5F" }}>
+        <FlashCard front>
+          <p style={{ color: darkblue }}>
             <b>{word} </b> <span style={{ color }}> ({cat}) </span>
           </p>
           <Button
@@ -86,35 +91,35 @@ function FlashCard(props) {
           </Button>
           <ProgressContainer>
             <Progress>
-              <Bar w={counts["learning"] * 4 + "%"} c="red" />
+              <Bar w={learning * 4 + "%"} c={darkred} />
             </Progress>
-            <Span>Learning : {counts["learning"]} </Span>
+            <Span>Learning : {learning} </Span>
           </ProgressContainer>
 
           <ProgressContainer>
             <Progress>
-              <Bar w={counts["reviewing"] * 4 + "%"} c="#F7AF06" />
+              <Bar w={reviewing * 4 + "%"} c={yellow} />
             </Progress>
-            <Span>Reviewing : {counts["reviewing"]} </Span>
+            <Span>Reviewing : {reviewing} </Span>
           </ProgressContainer>
 
           <ProgressContainer>
             <Progress>
-              <Bar w={counts["mastered"] * 4 + "%"} c="green" />
+              <Bar w={mastered * 4 + "%"} c={green} />
             </Progress>
-            <Span>Mastered : {counts["mastered"]} </Span>
+            <Span>Mastered : {mastered} </Span>
           </ProgressContainer>
-        </Card>
-        <Card>
+        </FlashCard>
+        <FlashCard>
           {info.map((m, i) => (
             <React.Fragment key={i}>
-              <p style={{ color: "#072F5F" }}>
+              <p style={{ color: darkblue }}>
                 <b>{word} </b> <span style={{ color }}> ({cat}) </span>
               </p>
               <p>
                 {m.type} {m.meaning}
               </p>
-              <p style={{ color: "#072F5F" }}>{m.sentence}</p>
+              <p style={{ color: darkblue }}>{m.sentence}</p>
             </React.Fragment>
           ))}
           <Button
@@ -137,10 +142,10 @@ function FlashCard(props) {
           >
             Right
           </Button>
-        </Card>
+        </FlashCard>
       </Container>
     </ParentContainer>
   );
 }
 
-export default FlashCard;
+export default FlashCards;

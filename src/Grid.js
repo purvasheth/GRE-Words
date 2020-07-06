@@ -1,26 +1,9 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import styled from "@emotion/styled";
 import { useHistory } from "react-router-dom";
 import { fetchWords, fetchStore } from "./FirebaseFunctions";
-import { Button } from "./Components";
-import UserContext from "./UserContext";
+import { HomeContainer, HomeCard, Button } from "./Components";
 import "./App.css";
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-`;
-
-const Card = styled.div`
-  margin: 20px;
-  padding: 20px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  width: 210px;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-`;
 
 const P = styled.p`
   margin: 10px 0px 40px 0px;
@@ -28,13 +11,13 @@ const P = styled.p`
   height: 0px;
   text-align: center;
   font-family: "Merriweather", serif;
-  font-size: 2rem;
+  font-size: 1.8rem;
   color: #072f5f;
 `;
 
 function Grid() {
-  const [sets] = useState(Array.from(Array(40).keys()));
-  const [user] = useContext(UserContext);
+  const sets = Array.from(Array(40).keys());
+  const user = JSON.parse(localStorage.getItem("authUser"));
   const history = useHistory();
 
   const handleClick = async (num, path) => {
@@ -56,10 +39,16 @@ function Grid() {
   };
 
   return (
-    <Container>
+    <HomeContainer>
       {sets.map((num) => (
-        <Card key={num}>
-          <P>{"Set " + (num + 1)}</P>
+        <HomeCard key={num}>
+          <P>
+            {num < 12
+              ? "Common " + (num + 1)
+              : num < 26
+              ? "Basic " + (num + 1 - 12)
+              : "Advance " + (num + 1 - 26)}
+          </P>
           <hr />
           <Button onClick={() => handleClick(num + 1, "list/")} secondary>
             List
@@ -68,9 +57,9 @@ function Grid() {
           <Button primary onClick={() => handleClick(num + 1, "flashcards/")}>
             Flashcards
           </Button>
-        </Card>
+        </HomeCard>
       ))}
-    </Container>
+    </HomeContainer>
   );
 }
 

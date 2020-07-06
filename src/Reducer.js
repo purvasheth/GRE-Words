@@ -1,5 +1,4 @@
 export function reducer(state, action) {
-  //handle global
   const { wordId } = action.payload;
   let newWord = state.filter((word) => word.hasOwnProperty(wordId))[0];
   switch (action.type) {

@@ -29,6 +29,7 @@ function App() {
         startFirebaseUI("#firebaseui-auth-container");
       } else {
         setLogged(true);
+        localStorage.setItem("authUser", JSON.stringify(authUser));
       }
     });
     return () => {

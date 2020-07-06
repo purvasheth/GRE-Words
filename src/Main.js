@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import UserContext from "./UserContext";
 import Home from "./Home";
 import List from "./List";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
-import FlashCard from "./FlashCard";
+import FlashCards from "./FlashCards";
 import App from "./App";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 
 function Main() {
   const user = useState({});
@@ -18,7 +18,7 @@ function Main() {
           <Route
             exact
             path="/flashcards"
-            render={(props) => <FlashCard {...props} />}
+            render={(props) => <FlashCards {...props} />}
           />
         </Switch>
       </BrowserRouter>
