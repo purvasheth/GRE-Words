@@ -1,31 +1,33 @@
 export function reducer(state, action) {
   const { wordId } = action.payload;
-  let newWord = state.filter((word) => word.hasOwnProperty(wordId))[0];
+  const newWord = state.filter((word) => word.hasOwnProperty(wordId))[0];
+  let { local, global, correct, wrong } = newWord[wordId];
   switch (action.type) {
     case "correct":
-      newWord[wordId]["correct"]++;
-      switch (newWord[wordId]["local"]) {
+      correct++;
+      switch (local) {
         case "learning":
-          newWord[wordId]["local"] = "reviewing";
-          newWord[wordId]["correct"] = 0;
+          local = "reviewing";
+          correct = 0;
           break;
         case "reviewing":
-          if (newWord[wordId]["correct"] === 3) {
-            newWord[wordId]["local"] = "mastered";
-            newWord[wordId]["correct"] = 0;
+          if (correct === 3) {
+            local = "mastered";
+            correct = 0;
           }
           break;
         case "new word":
-          newWord[wordId]["local"] = "mastered";
+          local = "mastered";
           break;
         default:
           console.log("mastered");
       }
       break;
     default:
-      newWord[wordId]["wrong"]++;
-      newWord[wordId]["correct"] = 0;
-      newWord[wordId]["local"] = "learning";
+      wrong++;
+      correct = 0;
+      local = "learning";
   }
-  return state.map((word) => (word.hasOwnProperty(wordId) ? newWord : word));
+  const finalWord = { [wordId]: { local, global, correct, wrong } };
+  return state.map((word) => (word.hasOwnProperty(wordId) ? finalWord : word));
 }

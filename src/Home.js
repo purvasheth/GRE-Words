@@ -1,9 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { auth } from "./firebase";
-import UserContext from "./UserContext";
 import { Redirect } from "react-router";
 import styled from "@emotion/styled";
-import { createUserDocument } from "./FirebaseFunctions";
+
 import Grid from "./Grid";
 
 //TODO: Add Navigation on top which is responsive and remove this button.
@@ -21,17 +20,15 @@ const Button = styled.button`
 function Home() {
   const [islogged, setLogged] = useState(true);
 
+  function signOut() {
+    auth.signOut();
+    setLogged(false);
+    localStorage.removeItem("authUser");
+  }
+
   return islogged ? (
     <React.Fragment>
-      <Button
-        onClick={() => {
-          auth.signOut();
-          setLogged(false);
-          localStorage.removeItem("authUser");
-        }}
-      >
-        Sign Out
-      </Button>
+      <Button onClick={signOut}>Sign Out</Button>
       <Grid />
     </React.Fragment>
   ) : (

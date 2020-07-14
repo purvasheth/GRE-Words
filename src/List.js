@@ -6,18 +6,18 @@ function List(props) {
 
   return (
     <React.Fragment>
-      {newWords.map((w) => (
-        <ListCard key={w.wordId}>
+      {newWords.map((newWord) => (
+        <ListCard key={newWord.wordId}>
           <WordHeading>
-            <b>{w.word}</b>
+            <b>{newWord.word}</b>
           </WordHeading>
           <React.Fragment>
-            {w.info.map((m, i) => (
-              <React.Fragment key={i}>
+            {newWord.info.map((data) => (
+              <React.Fragment key={data.meaning}>
                 <p>
-                  {m.type} {m.meaning}
+                  {data.type} {data.meaning}
                 </p>
-                <p style={{ color: colors.darkblue }}>{m.sentence}</p>
+                <p style={{ color: colors.darkblue }}>{data.sentence}</p>
               </React.Fragment>
             ))}
           </React.Fragment>

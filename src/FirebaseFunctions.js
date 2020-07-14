@@ -25,10 +25,6 @@ export const createUserDocument = async (user) => {
       console.error("Error creating user", console.error);
     }
   }
-
-  // Get the document and return it, since that's what we're
-  // likely to want to do next.
-  //return getUserDocument(user.uid);
 };
 
 export const fetchWords = async (num) => {
@@ -42,6 +38,7 @@ export const fetchWords = async (num) => {
     .get();
   return snapshot.docs.map((doc) => ({ wordId: doc.id, ...doc.data() }));
 };
+
 export const fetchStore = async (userId, num, words) => {
   const start = (num - 1) * 25;
   const end = num * 25 + 1;

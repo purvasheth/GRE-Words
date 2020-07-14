@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { startFirebaseUI } from "./Authentication";
 import { auth } from "./firebase";
+import { createUserDocument } from "./FirebaseFunctions";
 import styled from "@emotion/styled";
 import "../node_modules/firebaseui/dist/firebaseui.css";
 import "./App.css";
@@ -30,6 +31,7 @@ function App() {
       } else {
         setLogged(true);
         localStorage.setItem("authUser", JSON.stringify(authUser));
+        createUserDocument(authUser);
       }
     });
     return () => {
