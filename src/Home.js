@@ -1,38 +1,69 @@
-import React, { useState } from "react";
-import { auth } from "./firebase";
-import { Redirect } from "react-router";
+import React from "react";
 import styled from "@emotion/styled";
+import { useHistory } from "react-router-dom";
+import { fetchWords, fetchStore } from "./FirebaseFunctions";
+import { HomeContainer, HomeCard, Button } from "./Components";
+import "./App.css";
+import Navigation from "./Navigation";
 
-import Grid from "./Grid";
-
-//TODO: Add Navigation on top which is responsive and remove this button.
-const Button = styled.button`
-  padding: 8px 25px;
-  background: #0391ce;
-  color: #fff;
-  border-radius: 3px;
-  border: transparent;
-  position: absolute;
-  top: 15px;
-  right: 15px;
+const P = styled.p`
+  margin: 10px 0px 40px 0px;
+  width: 200px;
+  height: 0px;
+  text-align: center;
+  font-family: "Merriweather", serif;
+  font-size: 1.8rem;
+  color: #072f5f;
 `;
 
-function Home() {
-  const [islogged, setLogged] = useState(true);
-
-  function signOut() {
-    auth.signOut();
-    setLogged(false);
-    localStorage.removeItem("authUser");
+function SetName({ num }) {
+  if (num < 12) {
+    return <P> Common {num + 1}</P>;
+  } else if (num < 26) {
+    return <P>Basic {num + 1 - 12}</P>;
+  } else {
+    return <P>Advance {num + 1 - 26}</P>;
   }
+}
 
-  return islogged ? (
-    <React.Fragment>
-      <Button onClick={signOut}>Sign Out</Button>
-      <Grid />
-    </React.Fragment>
-  ) : (
-    <Redirect to="/" />
+function Home() {
+  const sets = Array.from(Array(40).keys());
+  const user = JSON.parse(localStorage.getItem("authUser"));
+  const history = useHistory();
+
+  const handleClick = async (num, path) => {
+    const newWords = await fetchWords(num);
+
+    if (path.includes("list")) {
+      history.push({
+        pathname: path,
+        state: { newWords },
+      });
+    } else {
+      //get store as well
+      const initialState = await fetchStore(user.uid, num, newWords);
+      history.push({
+        pathname: path,
+        state: { newWords, initialState },
+      });
+    }
+  };
+
+  return (
+    <HomeContainer>
+      <Navigation select="home" />
+      {sets.map((num) => (
+        <HomeCard key={num + ""}>
+          <SetName num={num} />
+          <Button onClick={() => handleClick(num + 1, "list/")} secondary>
+            List
+          </Button>
+          <Button primary onClick={() => handleClick(num + 1, "flashcards/")}>
+            Flashcards
+          </Button>
+        </HomeCard>
+      ))}
+    </HomeContainer>
   );
 }
 

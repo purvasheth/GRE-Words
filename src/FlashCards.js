@@ -12,6 +12,7 @@ import {
   Span,
   colors,
 } from "./Components";
+import Navigation from "./Navigation";
 
 function FlashCards(props) {
   const { newWords, initialState } = props.location.state;
@@ -32,6 +33,7 @@ function FlashCards(props) {
 
     return () => {
       writeStore(user.uid, store);
+      console.log(store);
     };
   }, []);
 
@@ -76,75 +78,78 @@ function FlashCards(props) {
   const { mastered, learning, reviewing } = counts;
 
   return (
-    <ParentContainer>
-      <Container flip={flip}>
-        <FlashCard front>
-          <p style={{ color: darkblue }}>
-            <b>{word} </b> <span style={{ color }}> ({cat}) </span>
-          </p>
-          <Button
-            primary
-            style={{ margin: "0px 0px 50px 0px" }}
-            onClick={() => setFlip(true)}
-          >
-            Check Meaning
-          </Button>
-          <ProgressContainer>
-            <Progress>
-              <Bar w={learning * 4 + "%"} c={darkred} />
-            </Progress>
-            <Span>Learning : {learning} </Span>
-          </ProgressContainer>
+    <React.Fragment>
+      <Navigation select="none" />
+      <ParentContainer>
+        <Container flip={flip}>
+          <FlashCard front>
+            <p style={{ color: darkblue }}>
+              <b>{word} </b> <span style={{ color }}> ({cat}) </span>
+            </p>
+            <Button
+              primary
+              style={{ margin: "0px 0px 50px 0px" }}
+              onClick={() => setFlip(true)}
+            >
+              Check Meaning
+            </Button>
+            <ProgressContainer>
+              <Progress>
+                <Bar w={learning * 4 + "%"} c={darkred} />
+              </Progress>
+              <Span>Learning : {learning} </Span>
+            </ProgressContainer>
 
-          <ProgressContainer>
-            <Progress>
-              <Bar w={reviewing * 4 + "%"} c={yellow} />
-            </Progress>
-            <Span>Reviewing : {reviewing} </Span>
-          </ProgressContainer>
+            <ProgressContainer>
+              <Progress>
+                <Bar w={reviewing * 4 + "%"} c={yellow} />
+              </Progress>
+              <Span>Reviewing : {reviewing} </Span>
+            </ProgressContainer>
 
-          <ProgressContainer>
-            <Progress>
-              <Bar w={mastered * 4 + "%"} c={green} />
-            </Progress>
-            <Span>Mastered : {mastered} </Span>
-          </ProgressContainer>
-        </FlashCard>
-        <FlashCard>
-          {info.map((m, i) => (
-            <React.Fragment key={i}>
-              <p style={{ color: darkblue }}>
-                <b>{word} </b> <span style={{ color }}> ({cat}) </span>
-              </p>
-              <p>
-                {m.type} {m.meaning}
-              </p>
-              <p style={{ color: darkblue }}>{m.sentence}</p>
-            </React.Fragment>
-          ))}
-          <Button
-            red
-            onClick={() => {
-              dispatch({ type: "wrong", payload: { wordId } });
-              setFlip(false);
-              // randomChoice(newWords);
-            }}
-          >
-            Wrong
-          </Button>
-          <Button
-            green
-            onClick={() => {
-              dispatch({ type: "correct", payload: { wordId } });
-              setFlip(false);
-              // randomChoice(newWords, store);
-            }}
-          >
-            Right
-          </Button>
-        </FlashCard>
-      </Container>
-    </ParentContainer>
+            <ProgressContainer>
+              <Progress>
+                <Bar w={mastered * 4 + "%"} c={green} />
+              </Progress>
+              <Span>Mastered : {mastered} </Span>
+            </ProgressContainer>
+          </FlashCard>
+          <FlashCard>
+            {info.map((m, i) => (
+              <React.Fragment key={i}>
+                <p style={{ color: darkblue }}>
+                  <b>{word} </b> <span style={{ color }}> ({cat}) </span>
+                </p>
+                <p>
+                  {m.type} {m.meaning}
+                </p>
+                <p style={{ color: darkblue }}>{m.sentence}</p>
+              </React.Fragment>
+            ))}
+            <Button
+              red
+              onClick={() => {
+                dispatch({ type: "wrong", payload: { wordId } });
+                setFlip(false);
+                // randomChoice(newWords);
+              }}
+            >
+              Wrong
+            </Button>
+            <Button
+              green
+              onClick={() => {
+                dispatch({ type: "correct", payload: { wordId } });
+                setFlip(false);
+                // randomChoice(newWords, store);
+              }}
+            >
+              Right
+            </Button>
+          </FlashCard>
+        </Container>
+      </ParentContainer>
+    </React.Fragment>
   );
 }
 

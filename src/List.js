@@ -1,11 +1,13 @@
 import React from "react";
 import { ListCard, WordHeading, colors } from "./Components";
+import Navigation from "./Navigation";
 
 function List(props) {
   const { newWords } = props.location.state;
 
   return (
     <React.Fragment>
+      <Navigation select="none" />
       {newWords.map((newWord) => (
         <ListCard key={newWord.wordId}>
           <WordHeading>

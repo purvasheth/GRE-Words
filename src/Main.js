@@ -1,9 +1,11 @@
 import React from "react";
-import Home from "./Home";
 import List from "./List";
 import FlashCards from "./FlashCards";
 import App from "./App";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
+import Home from "./Home";
+import Stats from "./Stats";
+import Revision from "./Revision";
 
 function Main() {
   return (
@@ -17,6 +19,8 @@ function Main() {
           path="/flashcards"
           render={(props) => <FlashCards {...props} />}
         />
+        <Route exact path="/stats" component={Stats} />
+        <Route exact path="/revision" component={Revision} />
       </Switch>
     </BrowserRouter>
   );
