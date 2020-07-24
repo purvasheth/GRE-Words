@@ -1,11 +1,11 @@
 import React from "react";
-import List from "./List";
-import FlashCards from "./FlashCards";
+import List from "./Home/List";
+import FlashCards from "./Home/FlashCards";
 import App from "./App";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
-import Home from "./Home";
-import Stats from "./Stats";
-import Revision from "./Revision";
+import Home from "./Home/Home";
+import Stats from "./Stats/Stats";
+import Revision from "./Revision/Revision";
 
 function Main() {
   return (
@@ -16,7 +16,7 @@ function Main() {
         <Route exact path="/list" render={(props) => <List {...props} />} />
         <Route
           exact
-          path="/flashcards"
+          path="/flashcards/:num"
           render={(props) => <FlashCards {...props} />}
         />
         <Route exact path="/stats" component={Stats} />

@@ -11,11 +11,15 @@
     "emotion": "^10.0.27",
     "firebase": "^7.15.5",
     "firebaseui": "^4.5.1",
+    "immer": "^7.0.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-redux": "^7.2.0",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.1"
+    "react-scripts": "3.4.1",
+    "redux": "^4.0.5",
+    "use-immer": "^0.4.0"
   },
   "scripts": {
     "start": "react-scripts start",

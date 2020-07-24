@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
-import { auth } from "./firebase";
+import { auth } from "../firebase";
 import { Redirect } from "react-router";
-import { colors } from "./Components";
+import { colors } from "../Components";
 import { useHistory } from "react-router-dom";
 import MenuIcon from "./MenuIcon";
 

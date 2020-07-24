@@ -1,6 +1,6 @@
 import React from "react";
-import { ListCard, WordHeading, colors } from "./Components";
-import Navigation from "./Navigation";
+import { ListCard, WordHeading, colors } from "../Components";
+import Navigation from "../Navigation/Navigation";
 
 function List(props) {
   const { newWords } = props.location.state;
@@ -16,7 +16,7 @@ function List(props) {
           <React.Fragment>
             {newWord.info.map((data) => (
               <React.Fragment key={data.meaning}>
-                <p>
+                <p style={{ width: "100%" }}>
                   {data.type} {data.meaning}
                 </p>
                 <p style={{ color: colors.darkblue }}>{data.sentence}</p>

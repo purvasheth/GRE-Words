@@ -1,6 +1,4 @@
-import React, { useState, useEffect, useReducer } from "react";
-import { writeStore } from "./FirebaseFunctions";
-import { reducer } from "./Reducer";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   ParentContainer,
@@ -11,45 +9,53 @@ import {
   Bar,
   Span,
   colors,
-} from "./Components";
-import Navigation from "./Navigation";
+} from "../Components";
+import Navigation from "../Navigation/Navigation";
+import { useSelector, useDispatch } from "react-redux";
+import { useParams } from "react-router";
+import { correct, wrong } from "../redux/userWords";
+import { writeUserWords } from "../FirebaseFunctions";
 
 function FlashCards(props) {
-  const { newWords, initialState } = props.location.state;
+  const { newWords } = props.location.state;
   const { green, yellow, darkred, darkgrey, darkblue } = colors;
   const user = JSON.parse(localStorage.getItem("authUser"));
 
   const [flip, setFlip] = useState(false);
+  const [wordId, setWordId] = useState(0);
   const [word, setWord] = useState("");
-  const [wordId, setWordId] = useState("");
   const [info, setInfo] = useState([]);
   const [cat, setCat] = useState("");
   const [color, setColor] = useState(darkgrey);
-  const [store, dispatch] = useReducer(reducer, initialState);
   const [counts, setCounts] = useState({});
+  const { num } = useParams();
+  const max = num * 25;
+  const min = (num - 1) * 25 + 1;
+  const dispatch = useDispatch();
+  const writeWords = useSelector((state) => state.userWords["group" + num]);
+  const userWords = writeWords.group;
 
   useEffect(() => {
-    randomChoice(newWords, store);
+    randomChoice(userWords);
 
     return () => {
-      writeStore(user.uid, store);
-      console.log(store);
+      writeUserWords(user.uid, writeWords);
     };
   }, []);
-
   useEffect(() => {
-    randomChoice(newWords, store);
-  }, [store]);
+    randomChoice(userWords);
+  }, [userWords]);
 
-  function randomChoice(arr) {
-    const w = arr[Math.floor(arr.length * Math.random())];
-    setWordId(w.wordId);
-    setWord(w.word);
-    setInfo(w.info);
-    let newWord = store.filter((word) => word.hasOwnProperty(w.wordId))[0];
-    const newCat = newWord[w.wordId]["local"];
-    setCat(newCat);
-    switch (newCat) {
+  function randomChoice(userWords) {
+    const randIndex = Math.floor(Math.random() * (max - min + 1)) + min;
+    const word = newWords[randIndex - min];
+    const userWord = userWords[randIndex];
+
+    setWordId(randIndex);
+    setWord(word.word);
+    setInfo(word.info);
+    setCat(userWord.local);
+    switch (userWord.local) {
       case "mastered":
         setColor(green);
         break;
@@ -63,20 +69,27 @@ function FlashCards(props) {
         setColor(darkgrey);
         break;
     }
-    const newCounts = {
-      "new word": 0,
-      learning: 0,
-      mastered: 0,
-      reviewing: 0,
-    };
-    store.forEach((word) => {
-      const key = Object.keys(word)[0];
-      newCounts[word[key]["local"]]++;
-    });
-    setCounts(newCounts);
+    let learning = 0,
+      mastered = 0,
+      reviewing = 0;
+    for (const key in userWords) {
+      switch (userWords[key].local) {
+        case "mastered":
+          mastered++;
+          break;
+        case "reviewing":
+          reviewing++;
+          break;
+        case "learning":
+          learning++;
+          break;
+        default:
+          break;
+      }
+      setCounts({ mastered, learning, reviewing });
+    }
   }
   const { mastered, learning, reviewing } = counts;
-
   return (
     <React.Fragment>
       <Navigation select="none" />
@@ -88,7 +101,7 @@ function FlashCards(props) {
             </p>
             <Button
               primary
-              style={{ margin: "0px 0px 50px 0px" }}
+              style={{ marginBottom: "50px" }}
               onClick={() => setFlip(true)}
             >
               Check Meaning
@@ -115,23 +128,22 @@ function FlashCards(props) {
             </ProgressContainer>
           </FlashCard>
           <FlashCard>
-            {info.map((m, i) => (
-              <React.Fragment key={i}>
+            {info.map((data) => (
+              <React.Fragment key={data.meaning}>
                 <p style={{ color: darkblue }}>
                   <b>{word} </b> <span style={{ color }}> ({cat}) </span>
                 </p>
                 <p>
-                  {m.type} {m.meaning}
+                  {data.type} {data.meaning}
                 </p>
-                <p style={{ color: darkblue }}>{m.sentence}</p>
+                <p style={{ color: darkblue }}>{data.sentence}</p>
               </React.Fragment>
             ))}
             <Button
               red
               onClick={() => {
-                dispatch({ type: "wrong", payload: { wordId } });
+                dispatch(wrong(wordId));
                 setFlip(false);
-                // randomChoice(newWords);
               }}
             >
               Wrong
@@ -139,9 +151,8 @@ function FlashCards(props) {
             <Button
               green
               onClick={() => {
-                dispatch({ type: "correct", payload: { wordId } });
+                dispatch(correct(wordId));
                 setFlip(false);
-                // randomChoice(newWords, store);
               }}
             >
               Right
